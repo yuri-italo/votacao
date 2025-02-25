@@ -5,7 +5,6 @@ import jakarta.validation.constraints.*;
 
 @Entity
 public class Pauta {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
