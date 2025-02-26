@@ -1,5 +1,6 @@
 package dev.yuri.votacao.model;
 
+import dev.yuri.votacao.model.enums.Escolha;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
@@ -9,8 +10,9 @@ public class Voto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @NotNull(message = "O voto não pode ser nulo")
-    private Boolean escolha;
+    private Escolha escolha;
 
     @ManyToOne
     @JoinColumn(name = "pauta_id", nullable = false)
