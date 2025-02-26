@@ -13,6 +13,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Pauta {
+    public Pauta() {}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

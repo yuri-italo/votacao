@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SessaoRepository extends JpaRepository<Sessao, Long> {
+    boolean existsByPautaId(Long pautaId);
 }

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX idx_unique_sessao_pauta_id ON sessao (pauta_id);

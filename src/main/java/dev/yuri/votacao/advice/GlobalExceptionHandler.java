@@ -1,6 +1,9 @@
 package dev.yuri.votacao.advice;
 
 import dev.yuri.votacao.dto.response.ErroResponse;
+import dev.yuri.votacao.exception.EntityAlreadyExistsException;
+import dev.yuri.votacao.exception.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -48,6 +51,50 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErroResponse> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                ex.getMessage(),
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(EntityAlreadyExistsException.class)
+    public ResponseEntity<ErroResponse> handleEntityAlreadyExistsException(EntityAlreadyExistsException ex, WebRequest request) {
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                ex.getMessage(),
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErroResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
+        String mensagemErro = "Erro de integridade de dados. Verifique se os dados fornecidos violam alguma restrição do banco de dados.";
+
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                mensagemErro,
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
 
