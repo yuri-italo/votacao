@@ -2,6 +2,7 @@ package dev.yuri.votacao.model;
 
 import dev.yuri.votacao.model.enums.Status;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,11 +16,14 @@ public class Sessao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "A data início não pode ser nula")
     private LocalDateTime dataInicio;
 
+    @NotNull(message = "A data fim não pode ser nula")
     private LocalDateTime dataFim;
 
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "O status não pode ser nulo")
     private Status status;
 
     @ManyToOne
