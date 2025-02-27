@@ -49,4 +49,8 @@ public class Sessao {
     public boolean isOpen() {
         return this.getStatus().equals(Status.ABERTA);
     }
+
+    public boolean isFinished() {
+        return LocalDateTime.now().isAfter(this.dataFim);
+    }
 }

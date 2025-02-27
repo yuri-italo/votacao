@@ -4,6 +4,7 @@ import dev.yuri.votacao.dto.response.ErroResponse;
 import dev.yuri.votacao.exception.EntityAlreadyExistsException;
 import dev.yuri.votacao.exception.EntityNotFoundException;
 import dev.yuri.votacao.exception.SessionClosedException;
+import dev.yuri.votacao.exception.SessionNotFinishedException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -84,6 +85,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SessionClosedException.class)
     public ResponseEntity<ErroResponse> handleSessionClosedException(SessionClosedException ex, WebRequest request) {
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage(),
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(SessionNotFinishedException.class)
+    public ResponseEntity<ErroResponse> handleSessionNotFinishedException(SessionNotFinishedException ex, WebRequest request) {
         ErroResponse errorResponse = new ErroResponse(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST.value(),
