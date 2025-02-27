@@ -2,10 +2,9 @@ package dev.yuri.votacao.mapper;
 
 import dev.yuri.votacao.dto.request.SessaoDTO;
 import dev.yuri.votacao.dto.response.SessaoResponse;
-import dev.yuri.votacao.exception.EntityNotFoundException;
 import dev.yuri.votacao.model.Pauta;
 import dev.yuri.votacao.model.Sessao;
-import dev.yuri.votacao.repository.PautaRepository;
+import dev.yuri.votacao.service.PautaService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 public abstract class SessaoMapper {
 
     @Autowired
-    private PautaRepository pautaRepository;
+    private PautaService pautaService;
 
     @Mapping(target = "pauta", source = "pautaId")
     public abstract Sessao toEntity(SessaoDTO sessaoDTO);
@@ -25,8 +24,7 @@ public abstract class SessaoMapper {
         if (pautaId == null) {
             return null;
         }
-        return pautaRepository.findById(pautaId)
-                .orElseThrow(() -> new EntityNotFoundException("Pauta não encontrada com o ID: " + pautaId));
+        return pautaService.findById(pautaId);
     }
 
 

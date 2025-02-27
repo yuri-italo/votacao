@@ -2,12 +2,11 @@ package dev.yuri.votacao.mapper;
 
 import dev.yuri.votacao.dto.request.VotoDTO;
 import dev.yuri.votacao.dto.response.VotoResponse;
-import dev.yuri.votacao.exception.EntityNotFoundException;
 import dev.yuri.votacao.model.Associado;
 import dev.yuri.votacao.model.Pauta;
 import dev.yuri.votacao.model.Voto;
-import dev.yuri.votacao.repository.AssociadoRepository;
-import dev.yuri.votacao.repository.PautaRepository;
+import dev.yuri.votacao.service.AssociadoService;
+import dev.yuri.votacao.service.PautaService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class VotoMapper {
 
     @Autowired
-    private PautaRepository pautaRepository;
+    private PautaService pautaService;
 
     @Autowired
-    private AssociadoRepository associadoRepository;
+    private AssociadoService associadoService;
 
     @Mapping(target = "pauta", source = "pautaId")
     @Mapping(target = "associado", source = "associadoId")
@@ -29,16 +28,14 @@ public abstract class VotoMapper {
         if (pautaId == null) {
             return null;
         }
-        return pautaRepository.findById(pautaId)
-                .orElseThrow(() -> new EntityNotFoundException("Pauta não encontrada com o ID: " + pautaId));
+        return pautaService.findById(pautaId);
     }
 
     protected Associado associadoIdToAssociado(Long associadoId) {
         if (associadoId == null) {
             return null;
         }
-        return associadoRepository.findById(associadoId)
-                .orElseThrow(() -> new EntityNotFoundException("Associado não encontrado com o ID: " + associadoId));
+        return associadoService.findById(associadoId);
     }
 
     @Mapping(target = "pauta", source = "pauta.nome")

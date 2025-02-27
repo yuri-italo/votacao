@@ -3,7 +3,6 @@ package dev.yuri.votacao.service;
 import dev.yuri.votacao.exception.EntityAlreadyExistsException;
 import dev.yuri.votacao.exception.EntityNotFoundException;
 import dev.yuri.votacao.model.Sessao;
-import dev.yuri.votacao.model.enums.Status;
 import dev.yuri.votacao.repository.SessaoRepository;
 import org.springframework.stereotype.Service;
 
