@@ -1,16 +1,16 @@
 package dev.yuri.votacao.controller;
 
 import dev.yuri.votacao.dto.request.SessaoDTO;
+import dev.yuri.votacao.dto.response.ResultadoResponse;
 import dev.yuri.votacao.dto.response.SessaoResponse;
 import dev.yuri.votacao.mapper.SessaoMapper;
+import dev.yuri.votacao.model.Resultado;
+import dev.yuri.votacao.model.Sessao;
 import dev.yuri.votacao.service.SessaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -39,6 +39,11 @@ public class SessaoController {
                 .toUri();
 
         return ResponseEntity.created(location).body(sessaoMapper.toResponse(savedSessao));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SessaoResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(sessaoMapper.toResponse(sessaoService.findById(id)));
     }
 
 }

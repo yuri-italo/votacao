@@ -27,6 +27,12 @@ public class SessaoService {
         return sessaoRepository.save(sessao);
     }
 
+    public Sessao findById(Long id) {
+        return sessaoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Sessão não encontrada com ID: " + id));
+    }
+
     public Sessao findByPautaId(Long id) {
         return sessaoRepository.findByPautaId(id)
                 .orElseThrow(() -> new EntityNotFoundException(
