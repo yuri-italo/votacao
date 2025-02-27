@@ -32,6 +32,13 @@ public class ResultadoService {
         this.votoService = votoService;
     }
 
+    /**
+     * Cria e persiste um novo resultado de votação para uma pauta.
+     *
+     * @param pauta A pauta que gerou a votação.
+     * @param contagemDosVotos Um mapa com a contagem dos votos para cada escolha (SIM ou NÃO).
+     * @return O resultado criado e salvo.
+     */
     public Resultado create(Pauta pauta, Map<Escolha, Long> contagemDosVotos) {
         log.info("Criando resultado para a pauta ID: {}", pauta.getId());
         Resultado resultado = new Resultado();
@@ -43,6 +50,13 @@ public class ResultadoService {
         return resultadoRepository.save(resultado);
     }
 
+    /**
+     * Recupera o resultado da votação para uma pauta, calculando-o caso não exista.
+     *
+     * @param pautaId O ID da pauta cujo resultado será consultado.
+     * @return O resultado da pauta.
+     * @throws SessionNotFinishedException Se a sessão de votação não foi encerrada.
+     */
     public Resultado getResultado(Long pautaId) {
         Objects.requireNonNull(pautaId, "O ID da pauta não pode ser nulo");
         log.info("Buscando resultado para a pauta ID: {}", pautaId);
@@ -54,6 +68,13 @@ public class ResultadoService {
                 });
     }
 
+    /**
+     * Calcula o resultado da votação para uma pauta, incluindo a contagem de votos e a determinação da situação da pauta.
+     *
+     * @param pautaId O ID da pauta cujo resultado será calculado.
+     * @return O resultado calculado.
+     * @throws SessionNotFinishedException Se a sessão de votação não foi encerrada.
+     */
     private Resultado calcularResultado(Long pautaId) {
         log.info("Iniciando cálculo do resultado para a pauta ID: {}", pautaId);
         Pauta pauta = pautaService.findById(pautaId);

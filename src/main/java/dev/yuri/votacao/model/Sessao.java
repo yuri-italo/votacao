@@ -39,6 +39,13 @@ public class Sessao {
         this.pauta = pauta;
     }
 
+    /**
+     * Método que retorna o status da sessão de votação, que pode ser:
+     * - ABERTA: Quando a sessão está em andamento, ou seja, a data atual está entre a data de início e a data de fim.
+     * - FECHADA: Quando a sessão já foi encerrada ou ainda não foi aberta.
+     *
+     * @return O status da sessão.
+     */
     public Status getStatus() {
         LocalDateTime agora = LocalDateTime.now();
         return (agora.isEqual(dataInicio) || (agora.isAfter(dataInicio) && agora.isBefore(dataFim)))

@@ -17,11 +17,24 @@ public class PautaService {
         this.pautaRepository = pautaRepository;
     }
 
+    /**
+     * Salva uma nova pauta no sistema.
+     *
+     * @param pauta A pauta a ser salva.
+     * @return A pauta salva.
+     */
     public Pauta save(Pauta pauta) {
         log.info("Salvando pauta: {}", pauta);
         return this.pautaRepository.save(pauta);
     }
 
+    /**
+     * Busca uma pauta pelo seu ID. Caso não seja encontrada, lança uma exceção {@link EntityNotFoundException}.
+     *
+     * @param id O ID da pauta a ser buscada.
+     * @return A pauta encontrada.
+     * @throws EntityNotFoundException Se a pauta não for encontrada.
+     */
     public Pauta findById(Long id) {
         log.info("Buscando pauta com ID: {}", id);
         return pautaRepository.findById(id)
@@ -31,6 +44,12 @@ public class PautaService {
                 });
     }
 
+    /**
+     * Exclui uma pauta pelo seu ID. Se a pauta não for encontrada, a exclusão não ocorre.
+     *
+     * @param id O ID da pauta a ser excluída.
+     * @throws EntityNotFoundException Se a pauta não for encontrada antes da exclusão.
+     */
     public void delete(Long id) {
         log.info("Tentando excluir pauta com ID: {}", id);
         var pauta = findById(id);

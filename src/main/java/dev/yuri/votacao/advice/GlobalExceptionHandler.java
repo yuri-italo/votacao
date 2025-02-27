@@ -2,10 +2,9 @@ package dev.yuri.votacao.advice;
 
 import dev.yuri.votacao.client.exception.InvalidCpfException;
 import dev.yuri.votacao.dto.response.ErroResponse;
-import dev.yuri.votacao.exception.EntityAlreadyExistsException;
-import dev.yuri.votacao.exception.EntityNotFoundException;
-import dev.yuri.votacao.exception.SessionClosedException;
-import dev.yuri.votacao.exception.SessionNotFinishedException;
+import dev.yuri.votacao.exception.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,18 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    private ResponseEntity<ErroResponse> buildErrorResponse(HttpStatus status, String message, String details, WebRequest request, List<ErroResponse.FieldError> fieldErrors) {
+        return ResponseEntity.status(status).body(new ErroResponse(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message,
+                request.getDescription(false),
+                fieldErrors
+        ));
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErroResponse> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
@@ -29,161 +40,55 @@ public class GlobalExceptionHandler {
                 .map(error -> new ErroResponse.FieldError(error.getField(), error.getDefaultMessage()))
                 .collect(Collectors.toList());
 
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                "Erro de validação",
-                request.getDescription(false),
-                fieldErrors
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        log.warn("Erro de validação: {}", fieldErrors);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Erro de validação", "Verifique os campos informados.", request, fieldErrors);
     }
-
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErroResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                "Corpo da requisição inválido. Verifique o formato do JSON.",
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        log.warn("Requisição com corpo inválido: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido", "Verifique o formato do JSON.", request, null);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErroResponse> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                "Not Found",
-                ex.getMessage(),
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        log.warn("Recurso não encontrado: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "O recurso solicitado não foi encontrado.", request, null);
     }
 
     @ExceptionHandler(InvalidCpfException.class)
     public ResponseEntity<ErroResponse> handleInvalidCpfException(InvalidCpfException ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                "Not Found",
-                ex.getMessage(),
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        log.warn("CPF inválido: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), "O CPF fornecido é inválido.", request, null);
     }
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
     public ResponseEntity<ErroResponse> handleEntityAlreadyExistsException(EntityAlreadyExistsException ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                "Conflict",
-                ex.getMessage(),
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        log.warn("Entidade já existente: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage(), "O recurso já existe no sistema.", request, null);
     }
 
-    @ExceptionHandler(SessionClosedException.class)
-    public ResponseEntity<ErroResponse> handleSessionClosedException(SessionClosedException ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                ex.getMessage(),
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(SessionNotFinishedException.class)
-    public ResponseEntity<ErroResponse> handleSessionNotFinishedException(SessionNotFinishedException ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                ex.getMessage(),
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    @ExceptionHandler({SessionClosedException.class, SessionNotFinishedException.class})
+    public ResponseEntity<ErroResponse> handleSessionExceptions(RuntimeException ex, WebRequest request) {
+        log.warn("Erro relacionado à sessão: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), "Erro relacionado ao status da sessão.", request, null);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErroResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
-        String mensagemErro = "Valor inválido fornecido";
-
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Bad Request",
-                mensagemErro,
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(NullPointerException.class)
-    public ResponseEntity<ErroResponse> handleNullPointerException(NullPointerException ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                "Um erro inesperado ocorreu. Possível acesso a um valor nulo.",
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        log.warn("Valor inválido fornecido: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Valor inválido fornecido", ex.getMessage(), request, null);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErroResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
-        String mensagemErro = "Erro de integridade de dados. Verifique se os dados fornecidos violam alguma restrição do banco de dados.";
-
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                "Conflict",
-                mensagemErro,
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        log.warn("Erro de integridade de dados: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, "Erro de integridade de dados", "Verifique se os dados fornecidos violam alguma restrição do banco.", request, null);
     }
-
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErroResponse> handleGenericException(Exception ex, WebRequest request) {
-        ErroResponse errorResponse = new ErroResponse(
-                LocalDateTime.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                "Ocorreu um erro interno no servidor",
-                request.getDescription(false),
-                null
-        );
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+        log.error("Erro interno do servidor: {}", ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", "Ocorreu um erro inesperado. Tente novamente mais tarde.", request, null);
     }
 }

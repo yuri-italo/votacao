@@ -20,6 +20,14 @@ public class SessaoService {
         this.sessaoRepository = sessaoRepository;
     }
 
+    /**
+     * Salva uma nova sessão de votação para uma pauta. Se já existir uma sessão para a pauta,
+     * uma exceção será lançada.
+     *
+     * @param sessao A sessão a ser salva.
+     * @return A sessão salva.
+     * @throws EntityAlreadyExistsException Se já existir uma sessão para a pauta.
+     */
     public Sessao save(Sessao sessao) {
         Long pautaId = Objects.requireNonNull(sessao.getPauta().getId(),
                 "O ID da pauta não pode ser nulo");
@@ -32,6 +40,13 @@ public class SessaoService {
         return sessaoRepository.save(sessao);
     }
 
+    /**
+     * Recupera uma sessão de votação pelo seu ID.
+     *
+     * @param id O ID da sessão.
+     * @return A sessão encontrada.
+     * @throws EntityNotFoundException Se a sessão não for encontrada.
+     */
     public Sessao findById(Long id) {
         log.info("Buscando sessão com ID: {}", id);
         return sessaoRepository.findById(id)
@@ -41,6 +56,13 @@ public class SessaoService {
                 });
     }
 
+    /**
+     * Recupera a sessão de votação associada a uma pauta pelo ID da pauta.
+     *
+     * @param id O ID da pauta.
+     * @return A sessão associada à pauta.
+     * @throws EntityNotFoundException Se a sessão não for encontrada para a pauta.
+     */
     public Sessao findByPautaId(Long id) {
         log.info("Buscando sessão para a pauta ID: {}", id);
         return sessaoRepository.findByPautaId(id)

@@ -28,6 +28,15 @@ public class VotoService {
         this.cpfValidationClient = cpfValidationClient;
     }
 
+    /**
+     * Salva um voto do associado para uma pauta específica. Antes de salvar, o voto é validado.
+     *
+     * @param voto O voto a ser salvo.
+     * @return O voto salvo.
+     * @throws InvalidCpfException Se o CPF do associado não for válido para votar.
+     * @throws EntityAlreadyExistsException Se o associado já tiver votado na pauta.
+     * @throws SessionClosedException Se a sessão de votação estiver fechada.
+     */
     public Voto save(Voto voto) {
         log.info("Tentando salvar voto do associado ID: {} na pauta ID: {}",
                 voto.getAssociado().getId(), voto.getPauta().getId());
@@ -35,11 +44,29 @@ public class VotoService {
         return votoRepository.save(voto);
     }
 
+    /**
+     * Recupera todos os votos associados a uma pauta específica.
+     *
+     * @param pautaId O ID da pauta.
+     * @return Uma lista de votos da pauta.
+     */
     public List<Voto> findAllByPautaId(Long pautaId) {
         log.info("Buscando votos para a pauta ID: {}", pautaId);
         return votoRepository.findAllByPautaId(pautaId);
     }
 
+    /**
+     * Realiza a validação do voto, verificando as condições como:
+     * - A pauta e o associado não podem ser nulos.
+     * - O CPF do associado deve ser válido para votar.
+     * - O associado não pode ter votado na mesma pauta mais de uma vez.
+     * - A sessão de votação deve estar aberta.
+     *
+     * @param voto O voto a ser validado.
+     * @throws InvalidCpfException Se o CPF do associado não for válido para votar.
+     * @throws EntityAlreadyExistsException Se o associado já tiver votado na pauta.
+     * @throws SessionClosedException Se a sessão de votação estiver fechada.
+     */
     private void validarVoto(Voto voto) {
         var pauta = Optional.ofNullable(voto.getPauta())
                 .orElseThrow(() -> {
