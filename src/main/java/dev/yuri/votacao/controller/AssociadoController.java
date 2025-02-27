@@ -3,7 +3,6 @@ package dev.yuri.votacao.controller;
 import dev.yuri.votacao.dto.request.AssociadoDTO;
 import dev.yuri.votacao.dto.response.AssociadoResponse;
 import dev.yuri.votacao.mapper.AssociadoMapper;
-import dev.yuri.votacao.model.Associado;
 import dev.yuri.votacao.service.AssociadoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

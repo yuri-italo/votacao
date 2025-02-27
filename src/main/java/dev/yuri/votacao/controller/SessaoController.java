@@ -1,11 +1,8 @@
 package dev.yuri.votacao.controller;
 
 import dev.yuri.votacao.dto.request.SessaoDTO;
-import dev.yuri.votacao.dto.response.ResultadoResponse;
 import dev.yuri.votacao.dto.response.SessaoResponse;
 import dev.yuri.votacao.mapper.SessaoMapper;
-import dev.yuri.votacao.model.Resultado;
-import dev.yuri.votacao.model.Sessao;
 import dev.yuri.votacao.service.SessaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
