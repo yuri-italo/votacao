@@ -1,6 +1,7 @@
 package dev.yuri.votacao.controller;
 
 import dev.yuri.votacao.dto.request.PautaDTO;
+import dev.yuri.votacao.dto.response.AssociadoResponse;
 import dev.yuri.votacao.dto.response.PautaResponse;
 import dev.yuri.votacao.mapper.PautaMapper;
 import dev.yuri.votacao.service.PautaService;
@@ -36,6 +37,11 @@ public class PautaController {
                 .toUri();
 
         return ResponseEntity.created(location).body(pautaMapper.toResponse(pauta));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PautaResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(pautaMapper.toResponse(pautaService.findById(id)));
     }
 
     @DeleteMapping("/{id}")
