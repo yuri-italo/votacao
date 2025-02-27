@@ -17,6 +17,9 @@ public abstract class SessaoMapper {
     @Autowired
     private PautaService pautaService;
 
+    @Autowired
+    private PautaMapper pautaMapper;
+
     @Mapping(target = "pauta", source = "pautaId")
     public abstract Sessao toEntity(SessaoDTO sessaoDTO);
 
@@ -42,7 +45,7 @@ public abstract class SessaoMapper {
                 dataInicioFormatada,
                 dataFimFormatada,
                 sessao.getStatus().toString(),
-                sessao.getPauta().getNome()
+                pautaMapper.toResponse(sessao.getPauta())
         );
     }
 }

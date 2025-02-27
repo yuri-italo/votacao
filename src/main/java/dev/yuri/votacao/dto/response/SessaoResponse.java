@@ -5,5 +5,5 @@ public record SessaoResponse(
         String dataInicio,
         String dataFim,
         String status,
-        String nomePauta
+        PautaResponse pauta
 ) {}

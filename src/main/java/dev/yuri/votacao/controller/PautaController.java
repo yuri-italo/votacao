@@ -1,8 +1,8 @@
 package dev.yuri.votacao.controller;
 
 import dev.yuri.votacao.dto.request.PautaDTO;
+import dev.yuri.votacao.dto.response.PautaResponse;
 import dev.yuri.votacao.mapper.PautaMapper;
-import dev.yuri.votacao.model.Pauta;
 import dev.yuri.votacao.service.PautaService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class PautaController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Pauta> save(@Valid @RequestBody PautaDTO pautaDTO) {
+    public ResponseEntity<PautaResponse> save(@Valid @RequestBody PautaDTO pautaDTO) {
         var pauta = pautaMapper.toEntity(pautaDTO);
         var savedPauta = pautaService.save(pauta);
 
@@ -35,7 +35,7 @@ public class PautaController {
                 .buildAndExpand(savedPauta.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(savedPauta);
+        return ResponseEntity.created(location).body(pautaMapper.toResponse(pauta));
     }
 
     @DeleteMapping("/{id}")
