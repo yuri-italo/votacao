@@ -1,8 +1,8 @@
 package dev.yuri.votacao.controller;
 
 import dev.yuri.votacao.dto.request.AssociadoDTO;
+import dev.yuri.votacao.dto.response.AssociadoResponse;
 import dev.yuri.votacao.mapper.AssociadoMapper;
-import dev.yuri.votacao.model.Associado;
 import dev.yuri.votacao.service.AssociadoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class AssociadoController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<Associado> save(@Valid @RequestBody AssociadoDTO associadoDTO) {
+    public ResponseEntity<AssociadoResponse> save(@Valid @RequestBody AssociadoDTO associadoDTO) {
         var associado = associadoMapper.toEntity(associadoDTO);
         var savedAssociado = associadoService.save(associado);
 
@@ -35,7 +35,7 @@ public class AssociadoController {
                 .buildAndExpand(savedAssociado.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(savedAssociado);
+        return ResponseEntity.created(location).body(associadoMapper.toResponse(savedAssociado));
     }
 
     @DeleteMapping("/{id}")
