@@ -41,7 +41,7 @@ public class ResultadoService {
     public Resultado getResultado(Long pautaId) {
         Objects.requireNonNull(pautaId, "O ID da pauta não pode ser nulo");
 
-        return resultadoRepository.findById(pautaId)
+        return resultadoRepository.findByPautaId(pautaId)
                 .orElseGet(() -> calcularResultado(pautaId));
     }
 
