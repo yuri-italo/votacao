@@ -1,5 +1,6 @@
 package dev.yuri.votacao.advice;
 
+import dev.yuri.votacao.client.exception.InvalidCpfException;
 import dev.yuri.votacao.dto.response.ErroResponse;
 import dev.yuri.votacao.exception.EntityAlreadyExistsException;
 import dev.yuri.votacao.exception.EntityNotFoundException;
@@ -57,6 +58,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErroResponse> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                ex.getMessage(),
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidCpfException.class)
+    public ResponseEntity<ErroResponse> handleInvalidCpfException(InvalidCpfException ex, WebRequest request) {
         ErroResponse errorResponse = new ErroResponse(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND.value(),

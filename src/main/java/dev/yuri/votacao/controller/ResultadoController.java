@@ -23,7 +23,7 @@ public class ResultadoController {
 
     @GetMapping("/{pautaId}")
     public ResponseEntity<ResultadoResponse> result(@PathVariable Long pautaId) {
-        Resultado resultado = resultadoService.getResultado(pautaId);
+        var resultado = resultadoService.getResultado(pautaId);
         return ResponseEntity.ok(resultadoMapper.toResponse(resultado));
     }
 }
