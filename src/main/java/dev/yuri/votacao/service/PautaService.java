@@ -22,4 +22,9 @@ public class PautaService {
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Pauta não encontrada com ID: " + id));
     }
+
+    public void delete(Long id) {
+        var pauta = findById(id);
+        pautaRepository.delete(pauta);
+    }
 }
