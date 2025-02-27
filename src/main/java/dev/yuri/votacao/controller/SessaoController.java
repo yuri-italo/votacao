@@ -38,7 +38,7 @@ public class SessaoController {
                 .buildAndExpand(savedSessao.getId())
                 .toUri();
 
-        return ResponseEntity.created(location).body(sessaoMapper.toResponse(sessao));
+        return ResponseEntity.created(location).body(sessaoMapper.toResponse(savedSessao));
     }
 
 }

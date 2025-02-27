@@ -3,14 +3,14 @@ package dev.yuri.votacao.model;
 import dev.yuri.votacao.model.enums.Status;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@AllArgsConstructor
+@Setter
 public class Sessao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,29 +22,31 @@ public class Sessao {
     @NotNull(message = "A data fim não pode ser nula")
     private LocalDateTime dataFim;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull(message = "O status não pode ser nulo")
-    private Status status;
-
     @ManyToOne
     @JoinColumn(name = "pauta_id", nullable = false)
     private Pauta pauta;
 
-    @PrePersist
-    private void inicializarCampos() {
-        if (this.dataInicio == null) {
-            this.dataInicio = (this.dataFim != null) ? this.dataFim.minusMinutes(1) : LocalDateTime.now();
+    public Sessao() {}
+
+    public Sessao(LocalDateTime dataInicio, LocalDateTime dataFim, Pauta pauta) {
+        this.dataInicio = (dataInicio != null) ? dataInicio : LocalDateTime.now();
+        this.dataFim = (dataFim != null) ? dataFim : this.dataInicio.plusMinutes(1);
+
+        if (!this.dataFim.isAfter(this.dataInicio)) {
+            throw new IllegalArgumentException("A data de fim deve ser maior que a data de início");
         }
-        if (this.dataFim == null) {
-            this.dataFim = this.dataInicio.plusMinutes(1);
-        }
-        atualizarStatus();
+
+        this.pauta = pauta;
     }
 
-    public void atualizarStatus() {
+    public Status getStatus() {
         LocalDateTime agora = LocalDateTime.now();
-        this.status = (agora.isEqual(dataInicio) || (agora.isAfter(dataInicio) && agora.isBefore(dataFim)))
+        return (agora.isEqual(dataInicio) || (agora.isAfter(dataInicio) && agora.isBefore(dataFim)))
                 ? Status.ABERTA
                 : Status.FECHADA;
+    }
+
+    public boolean isOpen() {
+        return this.getStatus().equals(Status.ABERTA);
     }
 }

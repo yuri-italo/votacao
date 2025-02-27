@@ -3,6 +3,7 @@ package dev.yuri.votacao.advice;
 import dev.yuri.votacao.dto.response.ErroResponse;
 import dev.yuri.votacao.exception.EntityAlreadyExistsException;
 import dev.yuri.votacao.exception.EntityNotFoundException;
+import dev.yuri.votacao.exception.SessionClosedException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,6 +80,50 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(SessionClosedException.class)
+    public ResponseEntity<ErroResponse> handleSessionClosedException(SessionClosedException ex, WebRequest request) {
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                ex.getMessage(),
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErroResponse> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        String mensagemErro = "Valor inválido fornecido";
+
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Bad Request",
+                mensagemErro,
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ErroResponse> handleNullPointerException(NullPointerException ex, WebRequest request) {
+        ErroResponse errorResponse = new ErroResponse(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                "Um erro inesperado ocorreu. Possível acesso a um valor nulo.",
+                request.getDescription(false),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

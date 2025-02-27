@@ -6,15 +6,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
-@AllArgsConstructor
+@Setter
 public class Pauta {
-    public Pauta() {}
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,4 +24,6 @@ public class Pauta {
     @NotBlank(message = "A descrição não pode estar vazia")
     @Size(max = 255, message = "A descrição deve ter no máximo 255 caracteres")
     private String descricao;
+
+    public Pauta() {}
 }

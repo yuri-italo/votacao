@@ -1,9 +1,13 @@
 package dev.yuri.votacao.service;
 
 import dev.yuri.votacao.exception.EntityAlreadyExistsException;
+import dev.yuri.votacao.exception.EntityNotFoundException;
 import dev.yuri.votacao.model.Sessao;
+import dev.yuri.votacao.model.enums.Status;
 import dev.yuri.votacao.repository.SessaoRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class SessaoService {
@@ -14,10 +18,19 @@ public class SessaoService {
     }
 
     public Sessao save(Sessao sessao) {
-        if (sessaoRepository.existsByPautaId(sessao.getPauta().getId())) {
-            throw new EntityAlreadyExistsException("Já existe uma sessão para esta pauta.");
-        }
-        return this.sessaoRepository.save(sessao);
+        Long pautaId = Objects.requireNonNull(sessao.getPauta().getId(),
+                "O ID da pauta não pode ser nulo");
+
+        sessaoRepository.findByPautaId(pautaId).ifPresent(s -> {
+            throw new EntityAlreadyExistsException("Já existe uma sessão para a pauta com ID: " + pautaId);
+        });
+
+        return sessaoRepository.save(sessao);
     }
 
+    public Sessao findByPautaId(Long id) {
+        return sessaoRepository.findByPautaId(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Sessão não encontrada para a pauta com ID: " + id));
+    }
 }

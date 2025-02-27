@@ -25,12 +25,8 @@ public class DataFimMaiorQueDataInicioValidator implements ConstraintValidator<D
         LocalDateTime dataInicio = getFieldValue(object, dataInicioField);
         LocalDateTime dataFim = getFieldValue(object, dataFimField);
 
-        if (dataInicio == null && dataFim == null) {
-            return true;
-        }
-
         if (dataInicio == null || dataFim == null) {
-            return buildViolation(context, "A data de início e a data de fim devem ser informadas juntas.", dataInicioField, dataFimField);
+           return true;
         }
 
         if (!dataFim.isAfter(dataInicio)) {
