@@ -4,13 +4,11 @@ import dev.yuri.votacao.dto.request.PautaDTO;
 import dev.yuri.votacao.dto.response.PautaResponse;
 import dev.yuri.votacao.mapper.PautaMapper;
 import dev.yuri.votacao.service.PautaService;
+import dev.yuri.votacao.util.UriUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/pauta")
@@ -29,13 +27,9 @@ public class PautaController {
         var pauta = pautaMapper.toEntity(pautaDTO);
         var savedPauta = pautaService.save(pauta);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedPauta.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(pautaMapper.toResponse(pauta));
+        return ResponseEntity
+                .created(UriUtil.buildUri(savedPauta.getId()))
+                .body(pautaMapper.toResponse(pauta));
     }
 
     @GetMapping("/{id}")

@@ -4,13 +4,11 @@ import dev.yuri.votacao.dto.request.SessaoDTO;
 import dev.yuri.votacao.dto.response.SessaoResponse;
 import dev.yuri.votacao.mapper.SessaoMapper;
 import dev.yuri.votacao.service.SessaoService;
+import dev.yuri.votacao.util.UriUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/sessao")
@@ -29,13 +27,9 @@ public class SessaoController {
         var sessao = sessaoMapper.toEntity(sessaoDTO);
         var savedSessao = sessaoService.save(sessao);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedSessao.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(sessaoMapper.toResponse(savedSessao));
+        return ResponseEntity
+                .created(UriUtil.buildUri(savedSessao.getId()))
+                .body(sessaoMapper.toResponse(savedSessao));
     }
 
     @GetMapping("/{id}")

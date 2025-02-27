@@ -4,13 +4,11 @@ import dev.yuri.votacao.dto.request.AssociadoDTO;
 import dev.yuri.votacao.dto.response.AssociadoResponse;
 import dev.yuri.votacao.mapper.AssociadoMapper;
 import dev.yuri.votacao.service.AssociadoService;
+import dev.yuri.votacao.util.UriUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/v1/associado")
@@ -29,13 +27,9 @@ public class AssociadoController {
         var associado = associadoMapper.toEntity(associadoDTO);
         var savedAssociado = associadoService.save(associado);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedAssociado.getId())
-                .toUri();
-
-        return ResponseEntity.created(location).body(associadoMapper.toResponse(savedAssociado));
+        return ResponseEntity
+                .created(UriUtil.buildUri(savedAssociado.getId()))
+                .body(associadoMapper.toResponse(savedAssociado));
     }
 
     @GetMapping("/{id}")
