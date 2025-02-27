@@ -7,9 +7,11 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 public class Associado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +23,6 @@ public class Associado {
 
     @NotBlank(message = "O CPF não pode estar vazio")
     private String cpf;
+
+    public Associado() {}
 }
