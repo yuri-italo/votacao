@@ -7,6 +7,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: votacao
+      TZ: America/Sao_Paulo
     ports:
       - "5432:5432"
     volumes:
@@ -24,6 +25,7 @@ services:
       DB_NAME: votacao
       DB_USER: postgres
       DB_PASSWORD: admin
+      TZ: America/Sao_Paulo
     ports:
       - "8080:8080"
 
