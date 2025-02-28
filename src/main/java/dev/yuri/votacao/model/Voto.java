@@ -1,6 +1,5 @@
 package dev.yuri.votacao.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import dev.yuri.votacao.model.enums.Escolha;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -21,10 +20,12 @@ public class Voto {
 
     @ManyToOne
     @JoinColumn(name = "pauta_id", nullable = false)
+    @NotNull(message = "A pauta não pode ser nula")
     private Pauta pauta;
 
     @ManyToOne
     @JoinColumn(name = "associado_id", nullable = false)
+    @NotNull(message = "O associado não pode ser nulo")
     private Associado associado;
 
     public Voto() {}

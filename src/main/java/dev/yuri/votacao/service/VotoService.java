@@ -39,7 +39,9 @@ public class VotoService {
      */
     public Voto save(Voto voto) {
         log.info("Tentando salvar voto do associado ID: {} na pauta ID: {}",
-                voto.getAssociado().getId(), voto.getPauta().getId());
+                voto.getAssociado() != null ? voto.getAssociado().getId() : "null",
+                voto.getPauta() != null ? voto.getPauta().getId() : "null");
+
         validarVoto(voto);
         return votoRepository.save(voto);
     }
