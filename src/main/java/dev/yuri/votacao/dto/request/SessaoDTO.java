@@ -15,14 +15,15 @@ import java.time.LocalDateTime;
 public record SessaoDTO(
         @FutureOrPresent(message = "A data de início deve ser no presente ou futuro")
         @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-        @Schema(example = "28/02/2025 14:30")
+        @Schema(description = "Data e hora de início da sessão", example = "28/02/2025 14:30")
         LocalDateTime dataInicio,
 
         @FutureOrPresent(message = "A data de fim deve ser no presente ou futuro")
         @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-        @Schema(example = "28/02/2025 15:30")
+        @Schema(description = "Data e hora de término da sessão", example = "28/02/2025 15:30")
         LocalDateTime dataFim,
 
         @NotNull(message = "A pauta associada é obrigatória")
+        @Schema(description = "ID da pauta associada", example = "1")
         Long pautaId
 ) {}
