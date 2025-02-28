@@ -3,7 +3,10 @@ package dev.yuri.votacao.advice;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import dev.yuri.votacao.client.exception.InvalidCpfException;
 import dev.yuri.votacao.dto.response.ErroResponse;
-import dev.yuri.votacao.exception.*;
+import dev.yuri.votacao.exception.EntityAlreadyExistsException;
+import dev.yuri.votacao.exception.EntityNotFoundException;
+import dev.yuri.votacao.exception.SessionClosedException;
+import dev.yuri.votacao.exception.SessionNotFinishedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -99,9 +102,9 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, "Erro de integridade de dados", "Verifique se os dados fornecidos violam alguma restrição do banco.", request, null);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ErroResponse> handleGenericException(Exception ex, WebRequest request) {
-//        log.error("Erro interno do servidor: {}", ex.getMessage(), ex);
-//        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", "Ocorreu um erro inesperado. Tente novamente mais tarde.", request, null);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErroResponse> handleGenericException(Exception ex, WebRequest request) {
+        log.error("Erro interno do servidor: {}", ex.getMessage(), ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", "Ocorreu um erro inesperado. Tente novamente mais tarde.", request, null);
+    }
 }

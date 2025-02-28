@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Mapper(componentModel = "spring")
@@ -21,7 +22,15 @@ public abstract class SessaoMapper {
     private PautaMapper pautaMapper;
 
     @Mapping(target = "pauta", source = "pautaId")
-    public abstract Sessao toEntity(SessaoDTO sessaoDTO);
+    public Sessao toEntity(SessaoDTO sessaoDTO) {
+        Pauta pauta = pautaIdToPauta(sessaoDTO.pautaId());
+
+        LocalDateTime dataInicio = sessaoDTO.dataInicio();
+        LocalDateTime dataFim = sessaoDTO.dataFim();
+
+        return new Sessao(dataInicio, dataFim, pauta);
+    }
+
 
     protected Pauta pautaIdToPauta(Long pautaId) {
         if (pautaId == null) {
