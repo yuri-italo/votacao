@@ -1,5 +1,6 @@
 package dev.yuri.votacao.advice;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import dev.yuri.votacao.client.exception.InvalidCpfException;
 import dev.yuri.votacao.dto.response.ErroResponse;
 import dev.yuri.votacao.exception.*;
@@ -44,11 +45,23 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Erro de validação", "Verifique os campos informados.", request, fieldErrors);
     }
 
+    @ExceptionHandler(JsonMappingException.class)
+    public ResponseEntity<ErroResponse> handleJsonMappingException(JsonMappingException ex, WebRequest request) {
+        log.warn("Erro de mapeamento de JSON: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Data inválida. Use o formato dd/MM/yyyy HH:mm",
+                "O formato de data fornecido não corresponde ao esperado.", request, null);
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErroResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, WebRequest request) {
+        if (ex.getCause() instanceof JsonMappingException) {
+            return handleJsonMappingException((JsonMappingException) ex.getCause(), request);
+        }
+
         log.warn("Requisição com corpo inválido: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Corpo da requisição inválido", "Verifique o formato do JSON.", request, null);
     }
+
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErroResponse> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
@@ -86,9 +99,9 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.CONFLICT, "Erro de integridade de dados", "Verifique se os dados fornecidos violam alguma restrição do banco.", request, null);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErroResponse> handleGenericException(Exception ex, WebRequest request) {
-        log.error("Erro interno do servidor: {}", ex.getMessage(), ex);
-        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", "Ocorreu um erro inesperado. Tente novamente mais tarde.", request, null);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErroResponse> handleGenericException(Exception ex, WebRequest request) {
+//        log.error("Erro interno do servidor: {}", ex.getMessage(), ex);
+//        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno no servidor", "Ocorreu um erro inesperado. Tente novamente mais tarde.", request, null);
+//    }
 }

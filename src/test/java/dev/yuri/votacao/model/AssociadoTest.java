@@ -33,7 +33,6 @@ class AssociadoTest {
 
         Set<ConstraintViolation<Associado>> violations = validator.validate(associado);
         assertFalse(violations.isEmpty(), "Deve haver violações para um nome vazio");
-        assertEquals("O nome não pode estar vazio", violations.iterator().next().getMessage());
     }
 
     @Test

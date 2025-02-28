@@ -36,7 +36,7 @@ public abstract class SessaoMapper {
             return null;
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         String dataInicioFormatada = sessao.getDataInicio().format(formatter);
         String dataFimFormatada = sessao.getDataFim().format(formatter);
 
